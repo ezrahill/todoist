@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"os"
 
@@ -11,9 +12,9 @@ import (
 func LoadCache(filename string, s *todoist.Store) error {
 	err := ReadCache(filename, s)
 	if err != nil {
-		err = WriteCache(default_cache_path, s)
+		err = WriteCache(cachePath, s)
 		if err != nil {
-			return CommandFailed
+			return err
 		}
 	}
 	return nil
@@ -37,9 +38,13 @@ func WriteCache(filename string, s *todoist.Store) error {
 	if err != nil {
 		return CommandFailed
 	}
+	err = AssureExists(filename)
+	if err != nil {
+		return err
+	}
 	err2 := ioutil.WriteFile(filename, buf, os.ModePerm)
 	if err2 != nil {
-		return CommandFailed
+		return errors.New("Couldn't write to the cache file")
 	}
 	return nil
 }

@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
 	"strings"
 	"text/tabwriter"
 )
@@ -29,5 +31,31 @@ func (w *TSVWriter) Flush() {
 func (w *TSVWriter) Write(record []string) error {
 	string := strings.Join(record[:], "\t")
 	fmt.Fprintln(w.w, string)
+	return nil
+}
+
+func Exists(path string) (bool, error) {
+	_, fileErr := os.Stat(path)
+	if fileErr == nil {
+		return true, nil
+	}
+	if os.IsNotExist(fileErr) {
+		return false, nil
+	}
+	return true, nil
+}
+
+func AssureExists(filePath string) error {
+	path := filepath.Dir(filePath)
+	exists, err := Exists(path)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		err = os.MkdirAll(path, os.ModePerm)
+		if err != nil {
+			return fmt.Errorf("Couldn't create path: %s", path)
+		}
+	}
 	return nil
 }

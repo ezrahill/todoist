@@ -31,7 +31,7 @@ USAGE:
    todoist [global options] command [command options] [arguments...]
 
 VERSION:
-   0.15.0
+   0.18.0
 
 COMMANDS:
      list, l                  Show all tasks
@@ -69,12 +69,12 @@ Supported filter is [here](https://github.com/sachaos/todoist/issues/15#issuecom
 #### e.g. List tasks which over due date and have high priority
 
 ```
-todoist list --filter '(overdue | today) & !p1'
+todoist list --filter '(overdue | today) & p1'
 ```
 
 ## Config
 
-Config stored in `$HOME/.todoist.config.json`
+Config by default stored in `$HOME/.config/todoist/config.json`
 
 It has following parameters:
 
@@ -83,7 +83,6 @@ It has following parameters:
   "token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", # todoist api token, required
   "color": "true"                                      # colorize all output, not required, default false
 }
-
 ```
 
 ## Install
@@ -99,6 +98,14 @@ $ brew install todoist
 
 * [todoist](https://aur.archlinux.org/packages/todoist/)
 * [todoist-git](https://aur.archlinux.org/packages/todoist-git/)
+
+### Nix/NixOS
+
+```
+nix-env -iA nixos.todoist
+```
+
+It's important to notice that if you're using NixOS, the cache and config file will be present at your home directory: `~/.todoist.cache.json` and `~/.todoist.config.json`.
 
 ### Docker
 
@@ -128,7 +135,8 @@ $ make install
 ### Register API token
 
 When you run `todoist` first time, you will be asked your Todoist API token.
-Please input Todoist API token and register it.
+Please input Todoist API token and register it. In order to get your API token
+go to [https://todoist.com/prefs/integrations](https://todoist.com/prefs/integrations)
 
 ### Sync
 
@@ -138,19 +146,37 @@ After register API token, you should sync with todoist.com by `sync` sub command
 $ todoist sync
 ```
 
-### Use with peco
+### Use with peco/fzf
 
 **RECOMMENDED**
 
-install [peco](https://github.com/peco/peco) and load `todoist_functions.sh` on your `.zshrc`, like below.
+Install [peco](https://github.com/peco/peco) and load `todoist_functions.sh` on your `.zshrc`, like below.
 
 fish version is here. [ka2n/fish-peco_todoist](https://github.com/ka2n/fish-peco_todoist) Thanks @ka2n!
 
 If you would prefer to use [fzf](https://github.com/junegunn/fzf) instead load `todoist_functions_fzf.sh` like below.
 
+fish version is here. [mordax7/fish-fzf-todoist](https://github.com/mordax7/fish-fzf-todoist)
+
 ```
 $ source "$GOPATH/src/github.com/sachaos/todoist/todoist_functions.sh"
 ```
+
+#### If installed via homebrew
+
+If installed via homebrew and using zsh (usually this is added to your `.zshrc` without the `$`, usually before loading your ZSH plugin manager):
+
+For **peco**:
+```
+$ source $(brew --prefix)/share/zsh/site-functions/_todoist_peco
+```
+
+For **fzf**:
+```
+$ source $(brew --prefix)/share/zsh/site-functions/_todoist_fzf
+```
+
+**TODO**: fish + homebrew
 
 #### keybind
 
@@ -161,6 +187,17 @@ $ source "$GOPATH/src/github.com/sachaos/todoist/todoist_functions.sh"
 <C-x> t c: select task and close with peco
 <C-x> t d: select date
 <C-x> t o: select task, and open it with browser when has url
+```
+
+### Enable shell completion
+
+You can also enable shell completion by adding the following lines to your `.bashrc`/`.zshrc` files.
+
+```
+# Bash
+PROG=todoist source "$GOPATH/src/github.com/urfave/cli/autocomplete/bash_autocomplete"
+# Zsh
+PROG=todoist source "$GOPATH/src/github.com/urfave/cli/autocomplete/zsh_autocomplete"
 ```
 
 ## Author
